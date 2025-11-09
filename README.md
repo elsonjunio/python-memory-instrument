@@ -20,7 +20,7 @@ Ele adiciona automaticamente decoradores de medição em todas as funções de u
 ### 📦 Instalação
 **1️⃣ Clone o repositório**
 ```bash
-git clone https://github.com/<seu-usuario>/python-memory-instrument.git
+git clone https://github.com/elsonjunio/python-memory-instrument.git
 cd python-memory-instrument
 ```
 

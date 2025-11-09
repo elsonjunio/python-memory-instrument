@@ -1,0 +1,50 @@
+name: Build on Tag
+
+on:
+  push:
+    tags:
+      - 'v*'  # Dispara quando uma tag como v1.0.0 é criada
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Clona o repositório
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Configura o Python (versão compatível com o projeto)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+
+      # 3️⃣ Instala o Poetry
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: '1.8.3'
+
+      # 4️⃣ Instala dependências
+      - name: Install dependencies
+        run: poetry install --no-root
+
+      # 5️⃣ Gera a build (arquivo wheel e tar.gz)
+      - name: Build package
+        run: poetry build
+
+      # 6️⃣ Salva os artefatos gerados (para download no GitHub Actions)
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: memory-tracker-dist
+          path: dist/
+
+      # 7️⃣ (Opcional) Cria um release automático no GitHub
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
