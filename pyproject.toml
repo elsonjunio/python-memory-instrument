@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "memory-tracker"
+version = "0.1.0"
+description = "Ferramenta para instrumentar scripts Python e medir consumo de memória em tempo de execução."
+authors = ["Elson Silva <elsonjuniog@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "memory_tracker" }]
+keywords = ["memory", "profiler", "instrumentation", "ast", "cli"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+memory-profiler = "^0.61.0"
+
+
+[tool.poetry.scripts]
+instrument-run = "memory_tracker.cli:main"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+black = "^24.0"
+isort = "^5.12"
+#flake8 = "^7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
