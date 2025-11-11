@@ -49,7 +49,7 @@ python -m memory_tracker.cli caminho/para/seu_script.py
 
 Exemplo:
 ```bash
-python -m memory_tracker.cli old/src/main.py
+python -m memory_tracker.cli example/main.py
 ```
 
 ### 📊 Relatório
@@ -68,6 +68,17 @@ Isso cria um arquivo profile_report.html com:
 - Métricas agregadas (média, total, variação)
 
 - Detalhes por função instrumentada
+
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="rel.png">
+    <source media="(prefers-color-scheme: light)" srcset="rel.png">
+    <img alt="TableZ Driver"
+         src="rel.png"
+         width="50%">
+  </picture>
+
+</div>
 
 ### 🧩 Estrutura do Projeto
 
