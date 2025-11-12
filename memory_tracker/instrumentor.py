@@ -75,10 +75,10 @@ def instrument_source(source: str, path: str):
     tree = ast.parse(source, filename=path)
 
     # garante import para o decorator rastreador
-    tree = ensure_module_import(tree, 'memory_tracker.profiler', 'tracked_profile', '__mp_profile')
+    tree = ensure_module_import(tree, 'memory_tracker.profiler', 'tracked_profile', 'm__mp_profile')
 
     # injeta o decorator nas funções
-    injector = DecoratorInjector(['__mp_profile', 'tracked_profile'], '__mp_profile')
+    injector = DecoratorInjector(['m__mp_profile', 'tracked_profile', 'property', 'setter', 'getter', 'delete'], 'm__mp_profile')
     tree = injector.visit(tree)
     ast.fix_missing_locations(tree)
 

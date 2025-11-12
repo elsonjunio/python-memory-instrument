@@ -15,9 +15,9 @@ class DecoratorInjector(ast.NodeTransformer):
         """
         Args:
             known_decorators (Iterable[str]): Lista de nomes de decorators que já
-                indicam instrumentação. Exemplo: ['__mp_profile', 'tracked_profile'].
+                indicam instrumentação. Exemplo: ['m__mp_profile', 'tracked_profile'].
             decorator_name (str): Nome do decorator que deve ser adicionado
-                (ex: '__mp_profile').
+                (ex: 'm__mp_profile').
         """
         self.known_decorators = set(known_decorators)
         self.decorator_name = decorator_name
