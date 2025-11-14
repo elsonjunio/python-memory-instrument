@@ -78,7 +78,7 @@ def instrument_source(source: str, path: str):
     tree = ensure_module_import(tree, 'memory_tracker.profiler', 'tracked_profile', 'm__mp_profile')
 
     # injeta o decorator nas funções
-    injector = DecoratorInjector(['m__mp_profile', 'tracked_profile', 'property', 'setter', 'getter', 'delete'], 'm__mp_profile')
+    injector = DecoratorInjector(['m__mp_profile', 'tracked_profile', 'property', 'setter', 'getter', 'delete', 'staticmethod'], 'm__mp_profile')
     tree = injector.visit(tree)
     ast.fix_missing_locations(tree)
 
