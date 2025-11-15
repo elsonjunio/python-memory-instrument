@@ -2,7 +2,6 @@ import sys
 import os
 import argparse
 
-# Import relativo (importando do pacote atual)
 from .instrumentor import run_instrumented
 
 
