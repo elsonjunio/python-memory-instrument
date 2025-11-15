@@ -1,0 +1,53 @@
+name: Auto PR for Feature and Bugfix Branches
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  push:
+    branches:
+      - "feature/**"
+      - "bugfix/**"
+  workflow_dispatch:
+
+jobs:
+  auto-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install GitHub CLI
+        uses: cli/cli@v3
+
+      - name: Detect branch name
+        id: vars
+        run: |
+          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+      - name: Check if PR already exists
+        id: check
+        run: |
+          PR_NUMBER=$(gh pr list \
+            --base develop \
+            --head "${{ steps.vars.outputs.branch_name }}" \
+            --state open \
+            --json number \
+            --jq '.[0].number')
+
+          echo "pr=$PR_NUMBER" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Pull Request if missing
+        if: ${{ steps.check.outputs.pr == '' }}
+        run: |
+          gh pr create \
+            --title "Auto PR: ${{ steps.vars.outputs.branch_name }} → develop" \
+            --body "Pull request criada automaticamente para merge em develop." \
+            --base develop \
+            --head "${{ steps.vars.outputs.branch_name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
