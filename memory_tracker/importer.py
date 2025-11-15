@@ -5,7 +5,9 @@ import importlib.machinery
 import traceback
 
 
-class SourceTransformImporter(importlib.abc.MetaPathFinder, importlib.abc.Loader):
+class SourceTransformImporter(
+    importlib.abc.MetaPathFinder, importlib.abc.Loader
+):
     """
     Importador personalizado que intercepta a carga de módulos Python (.py)
     e aplica uma função de transformação de código-fonte (como instrumentação)
@@ -48,7 +50,7 @@ class SourceTransformImporter(importlib.abc.MetaPathFinder, importlib.abc.Loader
             return None
 
         # apenas arquivos Python comuns
-        if not mod_path.endswith(".py"):
+        if not mod_path.endswith('.py'):
             return None
 
         # substitui o loader padrão por este
@@ -70,20 +72,20 @@ class SourceTransformImporter(importlib.abc.MetaPathFinder, importlib.abc.Loader
         """
         Executa o módulo aplicando a transformação de código-fonte.
         """
-        mod_path = getattr(module.__spec__, "origin_path", None)
+        mod_path = getattr(module.__spec__, 'origin_path', None)
         if not mod_path:
             # fallback para carregamento padrão
             return importlib.util.exec_module(module)
 
         try:
-            with open(mod_path, "r", encoding="utf-8") as f:
+            with open(mod_path, 'r', encoding='utf-8') as f:
                 src = f.read()
 
             code_obj, _ = self.instrument_source(src, mod_path)
             exec(code_obj, module.__dict__)
 
         except Exception as e:
-            print(f"[instrumentor] Falha ao instrumentar {mod_path}: {e}")
+            print(f'[instrumentor] Falha ao instrumentar {mod_path}: {e}')
             traceback.print_exc()
 
             # fallback: executa código original sem instrumentar

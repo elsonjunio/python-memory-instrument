@@ -30,12 +30,15 @@ class DecoratorInjector(ast.NodeTransformer):
         """
         Verifica se o nó (função) já possui algum dos decorators conhecidos.
         """
-        for d in getattr(node, "decorator_list", []):
+        for d in getattr(node, 'decorator_list', []):
             # Exemplo: @tracked_profile → ast.Name(id="tracked_profile")
             if isinstance(d, ast.Name) and d.id in self.known_decorators:
                 return True
             # Exemplo: @module.tracked_profile → ast.Attribute(attr="tracked_profile")
-            if isinstance(d, ast.Attribute) and getattr(d, "attr", None) in self.known_decorators:
+            if (
+                isinstance(d, ast.Attribute)
+                and getattr(d, 'attr', None) in self.known_decorators
+            ):
                 return True
         return False
 
@@ -49,14 +52,20 @@ class DecoratorInjector(ast.NodeTransformer):
         """
         self.generic_visit(node)
         if not self._has_decorator(node):
-            node.decorator_list.insert(0, ast.Name(id=self.decorator_name, ctx=ast.Load()))
+            node.decorator_list.insert(
+                0, ast.Name(id=self.decorator_name, ctx=ast.Load())
+            )
         return node
 
-    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AsyncFunctionDef:
+    def visit_AsyncFunctionDef(
+        self, node: ast.AsyncFunctionDef
+    ) -> ast.AsyncFunctionDef:
         """
         Adiciona o decorator à função assíncrona, se ainda não estiver presente.
         """
         self.generic_visit(node)
         if not self._has_decorator(node):
-            node.decorator_list.insert(0, ast.Name(id=self.decorator_name, ctx=ast.Load()))
+            node.decorator_list.insert(
+                0, ast.Name(id=self.decorator_name, ctx=ast.Load())
+            )
         return node

@@ -11,6 +11,7 @@ from .importer import SourceTransformImporter
 # Utilitários internos
 # ============================================================
 
+
 def find_insertion_index_for_imports(module_node: ast.Module) -> int:
     """
     Retorna o índice adequado (após docstring e 'from __future__' imports)
@@ -39,7 +40,9 @@ def find_insertion_index_for_imports(module_node: ast.Module) -> int:
     return idx
 
 
-def ensure_module_import(tree: ast.Module, module_name: str, alias_name: str, asname: str) -> ast.Module:
+def ensure_module_import(
+    tree: ast.Module, module_name: str, alias_name: str, asname: str
+) -> ast.Module:
     """
     Garante que o módulo de instrumentação (ex: 'metrics.track') esteja importado.
     Caso já exista, não insere duplicado.
@@ -68,6 +71,7 @@ def ensure_module_import(tree: ast.Module, module_name: str, alias_name: str, as
 # Funções principais de instrumentação
 # ============================================================
 
+
 def instrument_source(source: str, path: str):
     """
     Constrói a AST do código-fonte, injeta decorators e retorna o code object compilado.
@@ -75,10 +79,23 @@ def instrument_source(source: str, path: str):
     tree = ast.parse(source, filename=path)
 
     # garante import para o decorator rastreador
-    tree = ensure_module_import(tree, 'memory_tracker.profiler', 'tracked_profile', 'm__mp_profile')
+    tree = ensure_module_import(
+        tree, 'memory_tracker.profiler', 'tracked_profile', 'm__mp_profile'
+    )
 
     # injeta o decorator nas funções
-    injector = DecoratorInjector(['m__mp_profile', 'tracked_profile', 'property', 'setter', 'getter', 'delete', 'staticmethod'], 'm__mp_profile')
+    injector = DecoratorInjector(
+        [
+            'm__mp_profile',
+            'tracked_profile',
+            'property',
+            'setter',
+            'getter',
+            'delete',
+            'staticmethod',
+        ],
+        'm__mp_profile',
+    )
     tree = injector.visit(tree)
     ast.fix_missing_locations(tree)
 
@@ -89,6 +106,7 @@ def instrument_source(source: str, path: str):
 # ============================================================
 # Função principal: execução instrumentada
 # ============================================================
+
 
 def run_instrumented(path_to_script: str, extra_argv=None):
     """

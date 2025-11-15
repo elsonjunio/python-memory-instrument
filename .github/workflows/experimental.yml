@@ -1,0 +1,51 @@
+name: Build and Release Experimental
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: write  
+
+jobs:
+  build-experimental:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install Poetry
+        run: pip install poetry==1.8.3
+
+      - name: Install dependencies
+        run: poetry install --no-root
+
+      - name: Build package
+        run: poetry build
+
+      # ----------- PARTE IMPORTANTE ------------
+      # Cria/atualiza a tag experimental SEMPRE
+      - name: Force-create experimental tag
+        run: |
+          git tag -f experimental
+          git push -f origin experimental
+
+      - name: Create or Update Experimental Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: experimental
+          name: "Experimental Build"
+          prerelease: true
+          files: dist/*
+          overwrite_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
