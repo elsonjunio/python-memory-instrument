@@ -16,11 +16,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
 
-      - name: Install GitHub CLI
-        uses: cli/cli@v3
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Detect branch name
         id: vars
