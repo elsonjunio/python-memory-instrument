@@ -36,6 +36,7 @@ jobs:
           gh pr create \
             --base main \
             --head develop \
+            --draft \
             --title "Sync develop → main" \
             --body "PR criada automaticamente após merge ou atualização da branch."
         env:
