@@ -1,49 +1,23 @@
 name: Ensure Develop PR
 
-permissions:
-  contents: write
-  pull-requests: write
-
 on:
   push:
     branches:
-      - develop           # toda vez que atualizar develop, cria/verifica PR
+      - develop
+  workflow_dispatch:
+  check_run:
   pull_request:
-    types: [closed]       # quando a PR for mergeada ou fechada, recria
+    types: [closed]
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   ensure-pr:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Detect if PR closed was from develop→main (only run creation for merged PRs)
-        if: ${{ github.event_name == 'pull_request' }}
-        id: prinfo
-        run: |
-          echo "head=${{ github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
-          echo "merged=${{ github.event.pull_request.merged }}" >> $GITHUB_OUTPUT
-
-      - name: Skip if PR closed is not develop→main or not merged
-        if: >
-          ${{
-            github.event_name == 'pull_request' &&
-            (steps.prinfo.outputs.head != 'develop' || steps.prinfo.outputs.merged != 'true')
-          }}
-        run: echo "Skipping non-develop or non-merged PR"
-
       - name: Check if PR from develop to main exists
         id: check
-        if: >
-          ${{
-            github.event_name != 'pull_request' ||
-            (
-              steps.prinfo.outputs.head == 'develop' &&
-              steps.prinfo.outputs.merged == 'true'
-            )
-          }}
         run: |
           PR_NUMBER=$(gh pr list --base main --head develop --state open --json number --jq '.[0].number')
           echo "pr=$PR_NUMBER" >> $GITHUB_OUTPUT
@@ -51,22 +25,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create PR if not exists
-        if: >
-          ${{
-            steps.check.outputs.pr == '' &&
-            (
-              github.event_name != 'pull_request' ||
-              (
-                steps.prinfo.outputs.head == 'develop' &&
-                steps.prinfo.outputs.merged == 'true'
-              )
-            )
-          }}
+        if: ${{ steps.check.outputs.pr == '' }}
         run: |
           gh pr create \
             --base main \
             --head develop \
-            --title "Sync develop → main" \
-            --body "Pull Request recriada automaticamente após merge ou atualização da branch."
+            --title "Sync develop \u2192 main" \
+            --body "Pull Request automatizada para manter develop sincronizada com main."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
