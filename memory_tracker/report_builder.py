@@ -140,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function() {{
 </html>
 """
 
+
 def build_html_report(json_path):
     with open(json_path, 'r') as f:
         data = json.load(f)
@@ -157,9 +158,9 @@ def build_html_report(json_path):
     total_diff = sum(d['mem_diff'] for d in data)
     avg_mem = total_diff / total_funcs if total_funcs else 0
 
-    entries_html = ""
+    entries_html = ''
     for d in data:
-        log = escape(d.get("log", "") or "Sem log capturado")
+        log = escape(d.get('log', '') or 'Sem log capturado')
         entries_html += f"""
         <div class="card">
             <h3>🧩 {d['func']}</h3>
@@ -182,15 +183,18 @@ def build_html_report(json_path):
         labels=json.dumps(labels),
         before_data=json.dumps(before_data),
         after_data=json.dumps(after_data),
-        entries_html=entries_html
+        entries_html=entries_html,
     )
 
-    output_file = Path(json_path).with_suffix(".html")
-    output_file.write_text(html, encoding="utf-8")
-    print(f"✅ Relatório gerado: {output_file.resolve()}")
+    output_file = Path(json_path).with_suffix('.html')
+    output_file.write_text(html, encoding='utf-8')
+    print(f'✅ Relatório gerado: {output_file.resolve()}')
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Uso: python instrument_build_report.py caminho/do/profile_report.json")
+        print(
+            'Uso: python instrument_build_report.py caminho/do/profile_report.json'
+        )
         sys.exit(1)
     build_html_report(sys.argv[1])
