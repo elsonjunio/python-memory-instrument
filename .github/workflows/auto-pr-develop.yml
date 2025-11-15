@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Check if PR from develop to main exists
         id: check
         run: |
