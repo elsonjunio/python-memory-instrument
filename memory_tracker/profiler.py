@@ -9,30 +9,35 @@ import atexit
 from typing import Optional
 
 
-class JsonFileHandler:
+class JsonFileProfileHandler:
     """Handler padrão: grava logs JSON incrementais em um arquivo aberto."""
-    def __init__(self, filename: str = "profile_report.json", indent: Optional[int] = 2):
+
+    def __init__(
+        self, filename: str = 'profile_report.json', indent: Optional[int] = 2
+    ):
         self.filename = filename
-        self._file = open(filename, "w", encoding="utf-8")
+        self._file = open(filename, 'w', encoding='utf-8')
         self._first = True
         self._lock = Lock()
         self._indent = indent
-        self._file.write("[\n")
+        self._file.write('[\n')
 
     def handle(self, entry: dict):
         """Grava o item no arquivo JSON incrementalmente (thread-safe)."""
         with self._lock:
             if not self._first:
-                self._file.write(",\n")
+                self._file.write(',\n')
             else:
                 self._first = False
-            json.dump(entry, self._file, ensure_ascii=False, indent=self._indent)
+            json.dump(
+                entry, self._file, ensure_ascii=False, indent=self._indent
+            )
             self._file.flush()
 
     def close(self):
         with self._lock:
             # fechar o array JSON corretamente
-            self._file.write("\n]\n")
+            self._file.write('\n]\n')
             try:
                 self._file.close()
             except Exception:
@@ -54,9 +59,11 @@ class ProfileManager:
         return cls._instance
 
     def _init_once(self):
-        self._queue: "Queue[Optional[dict]]" = Queue()
-        self._handler = JsonFileHandler()
-        self._thread = Thread(target=self._worker, daemon=True, name="ProfileManagerWorker")
+        self._queue: 'Queue[Optional[dict]]' = Queue()
+        self._handler = JsonFileProfileHandler()
+        self._thread = Thread(
+            target=self._worker, daemon=True, name='ProfileManagerWorker'
+        )
         self._stop_event = Event()
         self._thread.start()
 
@@ -74,7 +81,7 @@ class ProfileManager:
                 self._handler.handle(entry)
             except Exception as e:
                 # não deixar o worker morrer por uma exceção de handler
-                print(f"[ProfileManager] erro ao processar entrada: {e}")
+                print(f'[ProfileManager] erro ao processar entrada: {e}')
 
         # esvaziar a fila antes de fechar
         while True:
@@ -95,7 +102,7 @@ class ProfileManager:
           - close()
         """
         # fechar handler antigo de forma segura
-        old = getattr(self, "_handler", None)
+        old = getattr(self, '_handler', None)
         if old:
             try:
                 old.close()
@@ -105,7 +112,7 @@ class ProfileManager:
 
     def emit(self, entry: dict):
         """Enfila um evento. É rápido e thread-safe."""
-        if not hasattr(self, "_queue"):
+        if not hasattr(self, '_queue'):
             # em casos estranhos, garantir inicialização
             self._init_once()
         self._queue.put(entry)
@@ -115,7 +122,7 @@ class ProfileManager:
         Solicita parada do worker e fecha o handler.
         Chamar no final da aplicação para garantir flush.
         """
-        if not hasattr(self, "_stop_event"):
+        if not hasattr(self, '_stop_event'):
             return
         self._stop_event.set()
         # colocar sentinel para que o thread saia imediatamente
@@ -126,7 +133,7 @@ class ProfileManager:
         self._thread.join(timeout=timeout)
         # fechar handler
         try:
-            if hasattr(self, "_handler") and self._handler:
+            if hasattr(self, '_handler') and self._handler:
                 self._handler.close()
         except Exception:
             pass
@@ -155,12 +162,12 @@ def tracked_profile(func):
         stream.close()
 
         entry = {
-            "func": func.__qualname__,
-            "mem_before": mem_before,
-            "mem_after": mem_after,
-            "mem_diff": mem_after - mem_before,
-            "timestamp": start,
-            "log": profile_log,
+            'func': func.__qualname__,
+            'mem_before': mem_before,
+            'mem_after': mem_after,
+            'mem_diff': mem_after - mem_before,
+            'timestamp': start,
+            'log': profile_log,
         }
 
         # envia ao manager de forma não bloqueante

@@ -48,7 +48,10 @@ def main():
         print('\nExecução interrompida pelo usuário.')
         sys.exit(130)
     except Exception as e:
-        print(f'Erro durante a execução do script instrumentado: {e}', file=sys.stderr)
+        print(
+            f'Erro durante a execução do script instrumentado: {e}',
+            file=sys.stderr,
+        )
         sys.exit(1)
 
 
