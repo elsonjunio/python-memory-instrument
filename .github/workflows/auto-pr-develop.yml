@@ -3,17 +3,16 @@ name: Ensure Develop PR
 permissions:
   contents: write
   pull-requests: write
-  
+
 on:
   push:
     branches:
       - develop
-  workflow_dispatch:
-  check_run:
-  pull_request:
+  pull_request_target:
     types: [closed]
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   ensure-pr:
@@ -22,7 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Check if PR from develop to main exists
+
+      - name: Check if PR exists
         id: check
         run: |
           PR_NUMBER=$(gh pr list --base main --head develop --state open --json number --jq '.[0].number')
@@ -30,13 +30,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create PR if not exists
+      - name: Create PR if missing
         if: ${{ steps.check.outputs.pr == '' }}
         run: |
           gh pr create \
             --base main \
             --head develop \
-            --title "Sync develop \u2192 main" \
-            --body "Pull Request automatizada para manter develop sincronizada com main."
+            --title "Sync develop → main" \
+            --body "PR criada automaticamente após merge ou atualização da branch."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
