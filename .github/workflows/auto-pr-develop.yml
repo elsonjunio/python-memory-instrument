@@ -1,0 +1,36 @@
+name: Ensure Develop PR
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+  check_run:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  ensure-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR from develop to main exists
+        id: check
+        run: |
+          PR_NUMBER=$(gh pr list --base main --head develop --state open --json number --jq '.[0].number')
+          echo "pr=$PR_NUMBER" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create PR if not exists
+        if: ${{ steps.check.outputs.pr == '' }}
+        run: |
+          gh pr create \
+            --base main \
+            --head develop \
+            --title "Sync develop \u2192 main" \
+            --body "Pull Request automatizada para manter develop sincronizada com main."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
