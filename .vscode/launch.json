@@ -17,31 +17,32 @@
             },
         },
         {
-            "name": "Python: src/main.py",
+            "name": "Flask: Launch app",
             "type": "debugpy",
             "request": "launch",
-            "program": "src/main.py",
-            "args": [],
+
+            // Executa Flask como módulo
+            "module": "flask",
+
+            // Argumentos do Flask
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload"
+            ],
+
+            // Onde está seu app Flask?
+            "env": {
+                "FLASK_APP": "examples/flask_example/app.py",
+                "FLASK_ENV": "development",
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+
+            // Terminal embutido do VSCode
             "console": "integratedTerminal",
-            "justMyCode": false,
-        },
-        {
-            "name": "Python: src/instrument_and_run.py",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "app/instrument_and_run.py",
-            "args": ["/home/elson/Worspace/Python/python-memory-instrument/src/main.py"],
-            "console": "integratedTerminal",
-            "justMyCode": false,
-        },
-        {
-            "name": "Python: src/instrument_build_report.py",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "app/instrument_build_report.py",
-            "args": ["/home/elson/Worspace/Python/python-memory-instrument/profile_report.json"],
-            "console": "integratedTerminal",
-            "justMyCode": false,
+
+            // Captura código fora do workspace para debugging
+            "justMyCode": false
         },
         {
             "name": "Python: Attach",

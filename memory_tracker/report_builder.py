@@ -141,9 +141,7 @@ document.addEventListener("DOMContentLoaded", function() {{
 """
 
 
-def build_html_report(json_path):
-    with open(json_path, 'r') as f:
-        data = json.load(f)
+def build_html_report(data):
 
     # Ordenar por timestamp
     data.sort(key=lambda x: x.get('timestamp', 0))
@@ -186,6 +184,16 @@ def build_html_report(json_path):
         entries_html=entries_html,
     )
 
+    return html
+
+
+def load_from_json(json_path):
+    with open(json_path, 'r') as f:
+        data = json.load(f)
+    return data
+
+
+def save_html_report(html, json_path):
     output_file = Path(json_path).with_suffix('.html')
     output_file.write_text(html, encoding='utf-8')
     print(f'✅ Relatório gerado: {output_file.resolve()}')
@@ -197,4 +205,6 @@ if __name__ == '__main__':
             'Uso: python instrument_build_report.py caminho/do/profile_report.json'
         )
         sys.exit(1)
-    build_html_report(sys.argv[1])
+    json_path = sys.argv[1]
+    html = build_html_report(load_from_json(json_path))
+    save_html_report(html, json_path)
