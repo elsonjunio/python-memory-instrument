@@ -209,4 +209,6 @@ __marimo__/
 #
 profile_report.html
 profile_report.json
+profile_logs.db
+profile_report.db
 .python-version
